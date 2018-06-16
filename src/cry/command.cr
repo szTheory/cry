@@ -16,13 +16,16 @@ module Cry
     end
 
     def run
-      Cry::Runner.new(
-        code: args.code,
-        log: args.log?,
-        back: back,
-        editor: args.editor,
-        repeat: args.repeat?
-      ).run
+      if args.log?
+        Cry::Logs.new.print
+      else
+        Cry::CodeRunner.new(
+          code: args.code,
+          back: back,
+          editor: args.editor,
+          repeat: args.repeat?
+        ).run
+      end
     end
 
     private def back : Int32
