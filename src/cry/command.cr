@@ -3,14 +3,13 @@ require "colorize"
 
 module Cry
   class Command < ::Cli::Command
-
     @filename_seed : Int64
     @filename_seed = Time.now.epoch_ms
 
     class Options
       arg "code", desc: "Crystal code or .cr file to execute within the application scope", default: ""
       bool ["-l", "--log"], desc: "Prints results of previous runs"
-      string ["-e", "--editor"], desc: "Prefered editor: [vim, nano, pico, etc], only used when no code or .cr file is specified", default: ENV["EDITOR"]? || "vim"
+      string ["-e", "--editor"], desc: "Preferred editor: [vim, nano, pico, etc], only used when no code or .cr file is specified", default: ENV["EDITOR"]? || "vim"
       string ["-b", "--back"], desc: "Runs previous command files: 'amber exec -b [times_ago]'", default: "0"
       bool ["-r", "--repeat"], desc: "Runs editor in a loop"
     end
@@ -32,12 +31,17 @@ module Cry
     def filename
       "./tmp/#{@filename_seed}_console.cr"
     end
+
     def result_filename
       "./tmp/#{@filename_seed}_console_result.log"
     end
 
     def run
-      @back = if args.repeat?; 1 else args.back.to_i(strict: false) || 0 end
+      @back = if args.repeat?
+                1
+              else
+                args.back.to_i(strict: false) || 0
+              end
 
       if args.log?
         logs = Dir.glob("./tmp/*_console_result.log")
@@ -74,7 +78,7 @@ module Cry
           break unless args.repeat?
           puts "\nENTER to edit, q to quit"
           input = gets
-          break if input=~ /^q/i
+          break if input =~ /^q/i
 
           @filename_seed = Time.now.epoch_ms
         end
