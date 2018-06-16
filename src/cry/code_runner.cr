@@ -13,26 +13,48 @@ module Cry
       Dir.mkdir("tmp") unless Dir.exists?("tmp")
 
       loop do
-        unless code.blank? || File.exists?(code)
-          File.write(filename, "puts (#{code}).inspect")
-        else
+        if wants_to_use_editor?
           prepare_file
-          system("#{editor} #{filename}")
+          open_for_editing
+        else
+          create_code_from_passed_in_argument
         end
 
         break unless File.exists?(filename)
 
-        result = ""
         result = `crystal eval 'require "#{filename}";'`
-
-        File.write(result_filename, result) unless result.nil?
-        puts result
+        log_result(result)
 
         break unless repeat?
         puts "\nENTER to edit, q to quit"
-        input = gets
-        break if input =~ /^q/i
+        break if wants_to_quit?
       end
+    end
+
+    private def wants_to_use_editor? : Bool
+      code.blank? || wants_to_edit_existing_file?
+    end
+
+    private def wants_to_edit_existing_file?
+      File.exists?(code)
+    end
+
+    private def create_code_from_passed_in_argument
+      File.write(filename, "puts (#{code}).inspect")
+    end
+
+    private def open_for_editing
+      system("#{editor} #{filename}")
+    end
+
+    private def wants_to_quit?
+      input = gets
+      input =~ /^q/i
+    end
+
+    private def log_result(result)
+      File.write(result_filename, result) unless result.nil?
+      puts result
     end
 
     def prepare_file
