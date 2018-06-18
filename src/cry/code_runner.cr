@@ -5,8 +5,9 @@ module Cry
     private getter editor : String
     private getter back : Int32
     private getter? repeat : Bool
+    private getter template : String?
 
-    def initialize(@code, @editor, @back = 0, @repeat = false)
+    def initialize(@code, @editor, @back = 0, @repeat = false, @template = nil)
     end
 
     def run
@@ -40,7 +41,13 @@ module Cry
     end
 
     private def create_code_from_passed_in_argument
-      File.write(filename, "puts (#{code}).inspect")
+      File.write filename, "#{template_contents}puts (#{code}).inspect"
+    end
+
+    private def template_contents : String?
+      template.try do |template_path|
+        File.read(template_path)
+      end
     end
 
     private def open_for_editing
@@ -53,26 +60,42 @@ module Cry
     end
 
     private def log_result(result)
-      File.write(result_filename, result) unless result.nil?
-      puts result
+      unless result.nil?
+        File.write(result_filename, result)
+        puts result
+      end
     end
 
     def prepare_file
-      _filename = if File.exists?(code)
-                    code
-                  elsif back > 0
-                    Dir.glob("./tmp/*_console.cr").sort.reverse[back - 1]?
-                  end
-
-      system("cp #{_filename} #{filename}") if _filename && File.exists?(_filename)
+      if wants_to_edit_existing_file?
+        system("cp #{existing_filename} #{filename}")
+      elsif wants_to_edit_a_new_file?
+        File.write(filename, template_contents)
+      end
     end
 
-    def filename
-      "./tmp/#{filename_seed}_console.cr"
+    def wants_to_edit_existing_file? : Bool
+      !!existing_filename
+    end
+
+    private def existing_filename : String?
+      if File.exists?(code)
+        code
+      elsif back > 0
+        Dir.glob("./tmp/*_console.cr").sort.reverse[back - 1]?
+      end
+    end
+
+    private def wants_to_edit_a_new_file? : Bool
+      !!template_contents
     end
 
     def result_filename
       "./tmp/#{filename_seed}_console_result.log"
+    end
+
+    def filename
+      "./tmp/#{filename_seed}_console.cr"
     end
   end
 end
