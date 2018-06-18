@@ -4,28 +4,62 @@ describe Cry do
   it "should evaluate command" do
     expected_result = %("Hello World"\n)
     Cry::Command.run([%("Hello World")])
-    logs = `ls tmp/*_console_result.log`.strip.split(/\s/).sort
-    File.read(logs.last?.to_s).should eq expected_result
+    newest_result.should eq expected_result
   end
 
   it "executes a .cr file from the first command-line argument" do
     File.write "amber_exec_spec_test.cr", "puts([:a] + [:b])"
     Cry::Command.run(["amber_exec_spec_test.cr", "-e", "tail"])
-    logs = `ls tmp/*_console_result.log`.strip.split(/\s/).sort
-    File.read(logs.last?.to_s).should eq "[:a, :b]\n"
+    newest_result.should eq "[:a, :b]\n"
     File.delete("amber_exec_spec_test.cr")
   end
 
   it "opens editor and executes .cr file on close" do
     Cry::Command.run(["-e", "echo 'puts 1000' > "])
-    logs = `ls tmp/*_console_result.log`.strip.split(/\s/).sort
-    File.read(logs.last?.to_s).should eq "1000\n"
+    newest_result.should eq "1000\n"
   end
 
   it "copies previous run into new file for editing and runs it returning results" do
     Cry::Command.run(["1337"])
     Cry::Command.run(["-e", "tail", "-b", "1"])
-    logs = `ls tmp/*_console_result.log`.strip.split(/\s/).sort
-    File.read(logs.last?.to_s).should eq "1337\n"
+    newest_result.should eq "1337\n"
   end
+
+  it "accepts a template file when passing in code" do
+    Cry::CodeRunner.new(
+      code: %(puts "Hello World!"),
+      editor: "tail",
+      template: "spec/support/template.cr",
+    ).run
+
+    newest_result.should eq <<-RESULT
+    From template
+    Hello World!
+    nil
+
+    RESULT
+    newest_code.should eq <<-CODE
+    puts "From template"
+    puts (puts "Hello World!").inspect
+    CODE
+  end
+
+  it "accepts a template file when using just the editor" do
+    Cry::CodeRunner.new(
+      code: "",
+      editor: "tail",
+      template: "spec/support/template.cr",
+    ).run
+
+    newest_result.should eq "From template\n"
+    newest_code.should eq %(puts "From template"\n)
+  end
+end
+
+private def newest_code
+  Cry::Logs.new.newest.code
+end
+
+private def newest_result
+  Cry::Logs.new.newest.results
 end
