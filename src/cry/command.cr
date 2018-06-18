@@ -17,7 +17,7 @@ module Cry
 
     def run
       if args.log?
-        Cry::Logs.new.print
+        Cry::Logs.new.print(back_command: "cry --back")
       else
         Cry::CodeRunner.new(
           code: args.code,

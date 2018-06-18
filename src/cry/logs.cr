@@ -2,10 +2,10 @@ require "colorize"
 
 module Cry
   class Logs
-    def print
+    def print(back_command : String)
       str = String.build do |s|
         logs.each_with_index do |log, i|
-          s.puts "cry --back #{i + 1}".colorize(:yellow).mode(:underline)
+          s.puts "#{back_command} #{i + 1}".colorize(:yellow).mode(:underline)
           s.puts "\n# Code:".colorize.colorize(:dark_gray)
           s.puts log.code.colorize.light_gray
           s.puts "\n# Results:".colorize(:dark_gray)
