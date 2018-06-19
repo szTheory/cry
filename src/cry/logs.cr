@@ -2,6 +2,8 @@ require "colorize"
 
 module Cry
   class Logs
+    class_property directory = "./tmp/console"
+
     def print(back_command : String)
       str = String.build do |s|
         logs.each_with_index do |log, i|
@@ -21,7 +23,7 @@ module Cry
     end
 
     private def logs : Array(Log)
-      Dir.glob("./tmp/*_console_result.log").sort.reverse.map do |path|
+      Dir.glob("#{Cry::Logs.directory}/*_console_result.log").sort.reverse.map do |path|
         Log.new(path)
       end
     end

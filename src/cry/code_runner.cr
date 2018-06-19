@@ -11,7 +11,7 @@ module Cry
     end
 
     def run
-      Dir.mkdir("tmp") unless Dir.exists?("tmp")
+      Dir.mkdir_p(Cry::Logs.directory) unless Dir.exists?(Cry::Logs.directory)
 
       loop do
         if wants_to_use_editor?
@@ -82,7 +82,7 @@ module Cry
       if File.exists?(code)
         code
       elsif back > 0
-        Dir.glob("./tmp/*_console.cr").sort.reverse[back - 1]?
+        Dir.glob("#{Cry::Logs.directory}/*_console.cr").sort.reverse[back - 1]?
       end
     end
 
@@ -91,11 +91,11 @@ module Cry
     end
 
     def result_filename
-      "./tmp/#{filename_seed}_console_result.log"
+      "#{Cry::Logs.directory}/#{filename_seed}_console_result.log"
     end
 
     def filename
-      "./tmp/#{filename_seed}_console.cr"
+      "#{Cry::Logs.directory}/#{filename_seed}_console.cr"
     end
   end
 end
