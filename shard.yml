@@ -1,18 +1,14 @@
 name: cry
-version: 0.4.0
+version: 0.5.0
 
 authors:
   - Isaac Sloan <isaac@isaacsloan.com>
+  - Paul Smith
 
 targets:
   cry:
     main: src/cry.cr
 
-dependencies:
-  cli:
-    github: mosop/cli
-    version: ~> 0.7.0
-
-crystal: 0.27
+crystal: 0.30.0
 
 license: MIT
