@@ -2,6 +2,12 @@
 
 Evaluated crystal code from files and command lines similar to edit in ruby pry.
 
+## Installation from source
+
+    curl -L https://github.com/szTheory/cry/archive/master.tar.gz | tar xz
+    cd cry-master/
+    make install
+
 ## Contributing
 
 1. Fork it ( https://github.com/luckyframework/cry/fork )
@@ -14,3 +20,4 @@ Evaluated crystal code from files and command lines similar to edit in ruby pry.
 
 - [elorest](https://github.com/elorest) Isaac Sloan - creator
 - [paulcsmith](https://github.com/paulcsmith) Paul Smith - maintainer of this fork.
+- [szTheory](https://github.com/szTheory) - fix Makefile
