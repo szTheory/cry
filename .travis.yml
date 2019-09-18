@@ -1,6 +1,5 @@
 language: crystal
 crystal:
-  - 0.29.0
   - latest
   - nightly
 
@@ -15,7 +14,6 @@ matrix:
   allow_failures:
     - crystal:
       - nightly
-      - latest
 
 deploy:
   provider: pages
